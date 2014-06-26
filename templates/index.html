@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>flask-jsonrpc-over-websocket-example</title>
+</head>
+<body>
+  <script type="application/javascript" src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script type="application/javascript">
+    var conn = new WebSocket('ws://{{ address }}:{{ port }}/rpc');
+    conn.onopen = function(evt) {
+      console.log('open connection');
+      var x = 100,
+          y = 200;
+      $('body').append($('<div>').text('Call RPC Method: Add ' + x + ', ' + y));
+      addMethod(100, 200);
+    }
+    conn.onmessage = function(evt) {
+      $('body').append($('<div>').text(evt.data));
+    };
+    conn.onclose = function(evt) {
+      console.log('connection closed.');
+    };
+    var rpcId = 0;
+    function addMethod(x, y) {
+      conn.send(JSON.stringify({
+        id: rpcId++,
+        jsonrpc: "2.0",
+        method: "add",
+        params: {
+          x: x,
+          y: y
+        }
+      }));
+    }
+  </script>
+</body>
+</html>
